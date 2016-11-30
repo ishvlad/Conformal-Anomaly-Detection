@@ -1,0 +1,16 @@
+{
+	"loopcad": {
+        "reward_low_FN_rate": {
+            "score": 0.0,
+            "threshold": 1.000000
+        },
+        "reward_low_FP_rate": {
+            "score": 0.0,
+            "threshold": 1.000000
+        },
+        "standard": {
+            "score": 0.0,
+            "threshold": 1.000000
+        }
+    }
+}

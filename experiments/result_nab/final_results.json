@@ -1,0 +1,87 @@
+{
+    "bayesChangePt": {
+        "reward_low_FN_rate": 32.25656378045977,
+        "reward_low_FP_rate": 3.2065793456896587,
+        "standard": 17.71402130366379
+    },
+    "contextOSE": {
+        "reward_low_FN_rate": 73.18167250416667,
+        "reward_low_FP_rate": 66.97713919047413,
+        "standard": 69.89956896844828
+    },
+    "expose": {
+        "reward_low_FN_rate": 26.920946783333335,
+        "reward_low_FP_rate": 3.1909311068965485,
+        "standard": 16.43666922426724
+    },
+    "knn": {
+        "reward_low_FN_rate": 7.211679892816098,
+        "reward_low_FP_rate": 4.969140475862067,
+        "standard": 6.507175011637933
+    },
+    "knncad": {
+        "reward_low_FN_rate": 30.445068083333332,
+        "reward_low_FP_rate": 22.310632973491384,
+        "standard": 27.564153848965518
+    },
+    "lof": {
+        "reward_low_FN_rate": 28.929750497988504,
+        "reward_low_FP_rate": 22.448615366637934,
+        "standard": 26.58428091922414
+    },
+    "lofcad": {
+        "reward_low_FN_rate": 43.940568485201155,
+        "reward_low_FP_rate": 9.955248552715513,
+        "standard": 37.61488834366379
+    },
+    "loop": {
+        "reward_low_FN_rate": 41.7810425517816,
+        "reward_low_FP_rate": 24.71508174655172,
+        "standard": 35.516391413879305
+    },
+    "loopcad": {
+        "reward_low_FN_rate": 44.6162885224138,
+        "reward_low_FP_rate": 7.253303777758626,
+        "standard": 34.16581209396552
+    },
+    "null": {
+        "reward_low_FN_rate": 0.0,
+        "reward_low_FP_rate": 0.0,
+        "standard": 0.0
+    },
+    "numenta": {
+        "reward_low_FN_rate": 69.43621795292528,
+        "reward_low_FP_rate": 58.759846356594835,
+        "standard": 65.36122348112069
+    },
+    "numentaTM": {
+        "reward_low_FN_rate": 65.27435838145976,
+        "reward_low_FP_rate": 52.19088076913362,
+        "standard": 59.98050308943966
+    },
+    "random": {
+        "reward_low_FN_rate": 25.876351314080456,
+        "reward_low_FP_rate": 5.763682319827586,
+        "standard": 16.831768350517237
+    },
+    "relativeEntropy": {
+        "reward_low_FN_rate": 58.84229239324713,
+        "reward_low_FP_rate": 47.598351759844824,
+        "standard": 54.64274893469828
+    },
+    "skyline": {
+        "reward_low_FN_rate": 44.4810173429885,
+        "reward_low_FP_rate": 27.08121005969828,
+        "standard": 35.687043255862065
+    },
+    "twitterADVec": {
+        "reward_low_FN_rate": 53.50107495100574,
+        "reward_low_FP_rate": 33.610051641206894,
+        "standard": 47.06195725408189
+    },
+    "windowedGaussian": {
+        "reward_low_FN_rate": 47.4100271583046,
+        "reward_low_FP_rate": 20.86798582474138,
+        "standard": 39.649523496077585
+    }
+}
