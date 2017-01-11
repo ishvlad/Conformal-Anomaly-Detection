@@ -1,3 +1,6 @@
 # Private Yahoo dataset
 data/data_yahoo/
 experiments/result_yahoo/
+
+*.pyc
+
