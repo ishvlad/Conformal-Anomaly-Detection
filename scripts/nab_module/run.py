@@ -30,7 +30,6 @@ except ImportError:
 from nab.runner import Runner
 from nab.util import (detectorNameToClass, checkInputs)
 
-
 # custom detectors
 from nab.detectors.null.null_detector import NullDetector
 
