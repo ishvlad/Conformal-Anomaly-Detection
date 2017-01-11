@@ -1,8 +1,6 @@
 from nab.detectors.base import AnomalyDetector
 
 import numpy as np
-import math
-import heapq
 
 class KnnDetector(AnomalyDetector):
 
@@ -11,7 +9,6 @@ class KnnDetector(AnomalyDetector):
 
         self.buf = []
         self.training = []
-        self.pred = 0
         self.max_dist = 0
         self.record_count = 0
         self.k = 43
@@ -61,15 +58,6 @@ class KnnDetector(AnomalyDetector):
                         self.sigma = np.linalg.inv(np.dot(np.array(self.training).T, self.training))
                     except np.linalg.linalg.LinAlgError:
                         print('Singular Matrix at record', self.record_count)
-                
-                if self.pred > 0:
-                    self.pred -= 1
-                    return [0.5]
-                
+
                 res = self.sigmoid(self.get_NN_dist(new_item))
-                
-                
-                if res > 0.995:
-                    self.pred = int(self.probationaryPeriod/5)
-            
                 return [res]

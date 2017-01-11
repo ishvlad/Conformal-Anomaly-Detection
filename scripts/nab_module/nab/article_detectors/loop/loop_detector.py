@@ -11,7 +11,6 @@ class LoopDetector(AnomalyDetector):
 
         self.buf = []
         self.training = []
-        self.pred = 0
         self.max_dist = 0
         self.record_count = 0
         self.lamb = 3
@@ -78,10 +77,6 @@ class LoopDetector(AnomalyDetector):
                     except np.linalg.linalg.LinAlgError:
                         print('Singular Matrix at record', self.record_count)
                 
-                if self.pred > 0:
-                    self.pred -= 1
-                    return [0.5]
-                
                 if (len(self.Pdist) == 0):
                     self.Pdist = np.array(list(map(lambda x: self.get_pdist(x), self.training)))
                     self.Plof = np.empty(len(self.training))
@@ -96,7 +91,5 @@ class LoopDetector(AnomalyDetector):
                 
                 nPlof = self.lamb*((np.sum(self.Plof**2)/len(self.training))**0.5)
                 res = max(0, math.erf(self.Plof[-1]/nPlof/(2**0.5)))
-                if res > 0.995:
-                    self.pred = int(self.probationaryPeriod/5)
                 
                 return [res]

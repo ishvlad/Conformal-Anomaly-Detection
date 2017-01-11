@@ -35,7 +35,7 @@ from nab.detectors.null.null_detector import NullDetector
 
 # article detectors
 
-# from nab.detectors.knn.knn_detector import KnnDetector
+from nab.article_detectors.knn.knn_detector import KnnDetector
 # from nab.detectors.lof.lof_detector import LofDetector
 # from nab.detectors.loop.loop_detector import LoopDetector
 # from nab.detectors.knncad.knncad_detector import KnncadDetector

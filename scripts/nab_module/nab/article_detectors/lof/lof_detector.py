@@ -10,7 +10,6 @@ class LofDetector(AnomalyDetector):
 
         self.buf = []
         self.training = []
-        self.pred = 0
         self.max_dist = 0
         self.record_count = 0
         self.denses = []
@@ -84,12 +83,5 @@ class LofDetector(AnomalyDetector):
                 self.denses.append(new_dense)
                 self.training.pop(0)
                 self.denses.pop(0)
-                
-                if self.pred > 0:
-                    self.pred -= 1
-                    return [0.5]
-                
-                if res > 0.995:
-                    self.pred = int(self.probationaryPeriod/5)
             
                 return [res]

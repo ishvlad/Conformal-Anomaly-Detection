@@ -15,43 +15,11 @@ class KnncadDetector(AnomalyDetector):
         self.scores = []
         self.results = []
         self.record_count = 0
-        self.pred = -1
-        self.success = 0
-        
-        self.append = 0.83
+
         self.dim = 26
         self.k = 6
-        self.success_border = 5
 
         self.sigma = np.diag(np.ones(self.dim))
-
-        # 0.84 19  5  4 | 0.9970, 41.27, 59.45, 53.40
-
-        # appe|dm| k|sb
-        # 0.76 26  6  5 | 0.9960, 31.87, 46.94, 41.96
-        # 0.83 26  6  5 | 
-        # 0.90 26  6  5 | 
-        # 0.97 26  6  5 | 
-        #
-        #
-        # 0.70  5 14  3 | 
-        # 0.70 12 14  3 | 
-        # 0.70 20 14  3 | 
-        # 0.70 27 14  3 | 
-        #
-        #
-        # 0.97 16  5  6 | 
-        # 0.97 16 12  6 | 
-        # 0.97 16 20  6 |
-        # 0.97 16 27  6 |
-        #
-        #
-        # 0.92 11 26  2 |
-        # 0.92 11 26  4 |
-        # 0.92 11 26  6 |
-        # 0.92 11 26  8 |
-
-
 
             
     def metric(self,a,b):
@@ -102,18 +70,5 @@ class KnncadDetector(AnomalyDetector):
                 self.calibration.append(new_item)
                 self.scores.append(new_score)
                 self.results.append(result)
-                
-                if self.pred > 0:
-                    self.pred -= 1
-                    return [0.5]
-                elif result >= 0.9965:
-                    self.success += 1
-                    if self.success == self.success_border:
-                        self.pred = int(self.probationaryPeriod/5)
-                        self.success = 0
-                        return [result]
-                    else:
-                        return [0.5]
-                else:
-                    self.success = 0
-                return [min(0.9965, result)]
+
+                return [result]

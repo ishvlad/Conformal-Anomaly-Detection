@@ -3,4 +3,4 @@ data/data_yahoo/
 experiments/result_yahoo/
 
 *.pyc
-
+.idea

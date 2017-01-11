@@ -10,7 +10,6 @@ class LofcadDetector(AnomalyDetector):
         
         self.buf = []
         self.training = []
-        self.pred = 0
         self.max_dist = 0
         self.record_count = 0
         self.denses = []
@@ -100,12 +99,6 @@ class LofcadDetector(AnomalyDetector):
                 self.ncms.pop(0) 
                 self.calibration.append(new_item)
                 self.ncms.append(new_ncm)
-                
-                if self.pred > 0:
-                    self.pred -= 1
-                    return [0.5]
-                
-                if result > 0.995:
-                    self.pred = int(self.probationaryPeriod/5)
+
             
                 return [result]
