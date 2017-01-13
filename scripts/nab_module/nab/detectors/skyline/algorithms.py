@@ -224,7 +224,6 @@ def histogram_bins(timeseries):
 #     """
 #     This method runs a meta-analysis on the metric to determine whether the
 #     metric has a past history of triggering.
-# TODO: weight intervals based on datapoint
 #     """
 #     # We want the datapoint to avoid triggering twice on the same data
 #     new_trigger = [time(), datapoint]

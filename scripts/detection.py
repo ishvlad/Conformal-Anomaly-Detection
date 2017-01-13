@@ -1,38 +1,32 @@
 import numpy as np
 import time
 import subprocess
-import sys
 
 #######
-### K position -- 17
-### DIM position -- 18
+### K position -- 10
+### DIM position -- 11
 #######
 detector = 'knn'
+is_nab = True
 
 detector_file = 'nab_module/nab/article_detectors/' + detector + '/' + detector + '_detector.py'
 pre_string_yahoo = 'time python nab_module/run.py --skipConfirmation --data Y '
 pre_string_nab = 'time python nab_module/run.py --skipConfirmation --data N '
 
+result_file = 'nab_' if is_nab else 'yahoo_'
+result_file += detector + '.txt'
+result_file = '../experiments/temp/' + result_file
+
 
 ################
 ## Parameters Generation
 ################
-def get_k_dim(known=None, k_first=True):
-    params = [4, 9, 14, 19, 24, 30]
-    if known is None:
-        known = np.random.randint(4, 30)
-    if k_first:
-        return np.vstack((np.repeat(known, len(params)), params)).T
-    else:
-        return np.vstack((params, np.repeat(known, len(params)))).T
-
 
 def set_params(k, dim):
-    text = None
     with open(detector_file, "r") as f:
         text = f.readlines()
-    text[16] = '        self.k = ' + str(k) + '\n'
-    text[17] = '        self.dim = ' + str(dim) + '\n'
+    text[9] = '        self.k = ' + str(k) + '\n'
+    text[10] = '        self.dim = ' + str(dim) + '\n'
     with open(detector_file, "w") as f:
         f.writelines(text)
 
@@ -40,71 +34,65 @@ def set_params(k, dim):
 ################
 ## Detection
 ################
-def make_note(k, dim, is_nab):
-    threshold_file = 'config/thresholds.json' if is_nab else 'config/thresholds_yahoo.json'
-    string = pre_string_nab if is_nab else pre_string_yahoo + ' --thresholdsFile ' + threshold_file
-    string += ' --score --normalize -d ' + detector
-    result_file = detector + "_nab_res.txt" if is_nab else detector + "_yahoo_res.txt"
-    result_file = 'opt/' + result_file
+def make_note(k, dim):
+    string = pre_string_nab if is_nab else pre_string_yahoo
+    string += ' -d ' + detector
 
-    # thresholds = np.linspace(0.88,1.,13)
-    thresholds = np.array([0.9, 0.925, 0.95, 0.96, 0.97, 0.98, 0.99, 0.9925, 0.995, 0.996, 0.997, 1.0])
-    results = []
+    # Detect + Score + Threshold optimize
+    output_string = subprocess.check_output(string[5:], stderr=subprocess.STDOUT, shell=True)
+    scores = str(output_string).split("\n")[-5:-2]
+    scores = list(map(lambda s: str(float(s.split(' ', 15)[-1])), scores))
+    final_score = sum(list(map(float, scores)))
 
+    write_string = '(%d,%d)' % (k, dim) + \
+                   '\t' + ', '.join(scores) + ' | ' + \
+                   str(final_score) + \
+                   '\t' + time.ctime() + '\n'
     with open(result_file, "a") as f:
-        wr = '-----------------------------\n\t'
-        wr += 'NAB ' if is_nab else 'Yahoo '
-        wr += detector + '(%d,%d)\n' % (k, dim)
-        f.write(wr)
-    for t in thresholds:
-        with open(threshold_file, 'w+') as f:
-            f.write(threshold_pattern % (t, t, t))
-        res = subprocess.check_output(string[5:], stderr=subprocess.STDOUT, shell=True)
-        with open(result_file, "a") as f:
-            arr = str(res).split("\n", 10)[-4:-1]
-            result = list(map(lambda s: str(float(s.split(' ', 15)[-1])), arr))
-            results.append(result)
-            wr = str(t) + ', ' + ', '.join(results[-1]) + ', ' + time.ctime() + '\n'
-            f.write(wr)
-        time.sleep(5)
+        f.write(write_string)
 
+    return final_score
+
+
+ks = np.linspace(2, 40, 5).astype(int)
+dims = np.linspace(2, 40, 5).astype(int)
+
+# edit division
+to_tuple = lambda ij: (ij / len(dims), ij % len(dims))
+buffer = []
+
+while len(ks) > 3 or len(dims) > 3:
+    vals = np.ones((len(ks), len(dims))) * np.inf
+    if len(buffer) != 0:
+        vals[[0, 0, -1, -1], [0, -1, 0, -1]] = buffer
+
+    status_string = 'k: ' + ', '.join(ks.astype(str)) + \
+                    '\tdim: ' + ', '.join(dims.astype(str)) + '\t' + time.ctime() + '\n'
     with open(result_file, "a") as f:
-        idx = np.argmax(np.array(results).astype(float), axis=0)
-        best = '\nBEST:\t' + str(k) + '\t' + str(dim) + '\t|\t' + ' '.join(
-            [results[idx[i]][i] for i in range(3)]) + ' | ' + ' '.join(thresholds[idx].astype(str)) + '\n'
-        f.write(best)
+        f.write(status_string)
 
+    for i, k in enumerate(ks):
+        for j, dim in enumerate(dims):
+            if vals[i, j] == np.inf:
+                set_params(k, dim)
+                vals[i, j] = make_note(k, dim)
 
-count = 4
-add = 4
-for _ in range(1):
-    # params = get_k_dim(known=20, k_first=False)
-    # params = [[8,3],[8,5],[10,3],[10,5]]
-    for k, dim in params:
-        set_params(k, dim)
+    best_ind = to_tuple(np.argmax(vals))
+    best = (ks[best_ind[0]], dims[best_ind[1]])
 
-        # # Yahoo
-        # print str(count) + ': Start detect ' + detector + '(' + str(k) + ', ' + str(dim) + ') Yahoo..',
-        # sys.stdout.flush()
-        # detect_string = pre_string_yahoo + ' --detect  -d ' + detector
-        # subprocess.check_output(detect_string, stderr=subprocess.STDOUT, shell=True)
-        # print 'Done. Now optimize..',
-        # sys.stdout.flush()
-        # make_note(k, dim, is_nab=False)
-        # print 'OK.'
-        # sys.stdout.flush()
-        # count += add
+    min_vals = (max(best_ind[0] - 1, 0), max(best_ind[1] - 1, 0))
+    max_vals = (min(best_ind[0] + 1, len(ks) - 1), min(best_ind[1] + 1, len(dims) - 1))
 
-        # NAB
-        print str(count) + ': Start detect ' + detector + '(' + str(k) + ', ' + str(dim) + ') NAB..',
-        sys.stdout.flush()
-        detect_string = pre_string_nab + ' --detect  -d ' + detector
-        # with open('myfile', "w") as outfile:
-            # subprocess.call(my_cmd, stdout=outfile)
-        subprocess.check_output(detect_string, stderr=subprocess.STDOUT, shell=True)
-        print 'Done. Now optimize..',
-        sys.stdout.flush()
-        make_note(k, dim, is_nab=True)
-        print 'OK.'
-        sys.stdout.flush()
-        count += add
+    buffer = [vals[min_vals], vals[min_vals[0], max_vals[1]],
+              vals[max_vals[0], min_vals[1]], vals[max_vals]]
+
+    ks = np.array(sorted(list(set(np.linspace(ks[min_vals[0]], ks[max_vals[0]], 5).astype(int)))))
+    dims = np.array(sorted(list(set(np.linspace(dims[min_vals[1]], dims[max_vals[1]], 5).astype(int)))))
+
+    status_string = 'BEST:\t' + str(vals[best_ind]) + ' at ' + str(best) + '\n' + \
+                    '-'*40 + '\n'
+    with open(result_file, "a") as f:
+        f.write(status_string)
+
+with open(result_file, "a") as f:
+    f.write('STOP ITERATION\t' + time.ctime() + '\n\n')
