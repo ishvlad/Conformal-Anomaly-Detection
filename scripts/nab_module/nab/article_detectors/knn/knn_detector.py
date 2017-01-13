@@ -10,17 +10,20 @@ class KnnDetector(AnomalyDetector):
         self.k = 5
         self.dim = 13
 
-        # Attributes
+        # Algorithm attributes
         self.buf = []
         self.training = []
         self.record_count = 0
-        self.sigma = np.diag(np.ones(self.dim))
         self.rang = self.inputMax - self.inputMin
 
+        # Mahalanobis attributes
+        self.sigma = np.diag(np.ones(self.dim))
+        self.sigma_inv = np.diag(np.ones(self.dim))
+        self.mean = -1
 
     def metric(self, a, b):
         diff = a - np.array(b)
-        return np.dot(np.dot(diff, self.sigma), diff.T) ** 0.5
+        return np.sqrt(np.dot(np.dot(diff, self.sigma_inv), diff.T))
 
     def get_NN_dist(self, item):
         dists = []
@@ -34,11 +37,22 @@ class KnnDetector(AnomalyDetector):
                     dists[i] = dist
         return sum(dists) / (self.rang * self.k * self.dim ** 0.5)
 
-    def update_sigma(self):
+    def update_sigma(self, new_item=None, inverse=False):
         try:
-            X = self.training - np.mean(self.training, axis=0)
-            self.sigma = np.linalg.inv(np.dot(X.T, X))
-            self.sigma /= np.linalg.norm(self.sigma, axis=0)
+            if inverse:
+                self.mean = np.mean(self.training, axis=0).reshape(-1, 1)
+                X = self.training - self.mean.T
+                self.sigma = np.dot(X.T, X)
+            else:
+                delta_ = np.array([new_item]) - self.mean.T
+                self.mean += delta_.T / self.record_count
+
+                U = np.dot(delta_.T, delta_)
+                U -= U / self.record_count
+                self.sigma += U
+
+            self.sigma_inv = np.linalg.inv(self.sigma)
+            self.sigma_inv /= np.linalg.norm(self.sigma_inv, axis=0)
         except np.linalg.linalg.LinAlgError:
             print('Singular Matrix at record', self.record_count)
 
@@ -59,6 +73,9 @@ class KnnDetector(AnomalyDetector):
             else:
                 self.training.append(new_item)
 
-                self.update_sigma()
+                if self.record_count == self.probationaryPeriod - self.dim:
+                    self.update_sigma(inverse=True)
+                else:
+                    self.update_sigma(new_item=new_item)
 
                 return [self.get_NN_dist(new_item)]
