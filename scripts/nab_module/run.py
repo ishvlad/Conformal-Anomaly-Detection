@@ -33,14 +33,17 @@ from nab.util import (detectorNameToClass, checkInputs)
 # custom detectors
 from nab.detectors.null.null_detector import NullDetector
 
-# article detectors
+#####################
+### article detectors
+#####################
 
 from nab.article_detectors.knn.knn_detector import KnnDetector
-# from nab.detectors.lof.lof_detector import LofDetector
-# from nab.detectors.loop.loop_detector import LoopDetector
-# from nab.detectors.knncad.knncad_detector import KnncadDetector
-# from nab.detectors.lofcad.lofcad_detector import LofcadDetector
-# from nab.detectors.loopcad.loopcad_detector import LoopcadDetector
+# from nab.article_detectors.lof.lof_detector import LofDetector
+# from nab.article_detectors.loop.loop_detector import LoopDetector
+
+# from nab.article_detectors.knncad.knncad_detector import KnncadDetector
+# from nab.article_detectors.lofcad.lofcad_detector import LofcadDetector
+# from nab.article_detectors.loopcad.loopcad_detector import LoopcadDetector
 
 
 def getDetectorClassConstructors(detectors):

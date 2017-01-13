@@ -1,16 +1,30 @@
 {
-	"loopcad": {
+    "knn": {
+        "reward_low_FN_rate": {
+            "score": -524.51041999999995,
+            "threshold": 0.13862399999999997
+        },
+        "reward_low_FP_rate": {
+            "score": -276.0,
+            "threshold": 0.32684799999999997
+        },
+        "standard": {
+            "score": -276.0,
+            "threshold": 0.32684799999999997
+        }
+    },
+    "loopcad": {
         "reward_low_FN_rate": {
             "score": 0.0,
-            "threshold": 1.000000
+            "threshold": 1.0
         },
         "reward_low_FP_rate": {
             "score": 0.0,
-            "threshold": 1.000000
+            "threshold": 1.0
         },
         "standard": {
             "score": 0.0,
-            "threshold": 1.000000
+            "threshold": 1.0
         }
     }
 }

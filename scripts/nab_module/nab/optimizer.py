@@ -18,6 +18,7 @@
 # http://numenta.org/licenses/
 # ----------------------------------------------------------------------
 
+import numpy as np
 from nab.scorer import scoreCorpus
 
 
@@ -40,8 +41,8 @@ def optimizeThreshold(args):
   optimizedThreshold, optimizedScore = twiddle(
     objFunction=objectiveFunction,
     args=args,
-    initialGuess=0.5,
-    tolerance=.0000001)
+    initialGuess=0.1,
+    tolerance=.0001)
 
   print "Optimizer found a max score of {} with anomaly threshold {}.".format(
     optimizedScore, optimizedThreshold)
@@ -52,8 +53,8 @@ def optimizeThreshold(args):
   }
 
 
-def twiddle(objFunction, args, initialGuess=0.5, tolerance=0.00001,
-            domain=(float("-inf"), float("inf"))):
+def twiddle(objFunction, args, initialGuess=0.5, tolerance=0.001,
+            domain=(0., 1.)):
   """Optimize a single parameter given an objective function.
 
   This is a local hill-climbing algorithm. Here is a simple description of it:
@@ -76,60 +77,41 @@ def twiddle(objFunction, args, initialGuess=0.5, tolerance=0.00001,
                               yielding the best score, and second item the
                               optimum score from the objective function.
   """
-  pastCalls = {}
-  x = initialGuess
-  delta = 0.1
-  bestScore = objFunction(x, args)
+  x = -1
+  div_param = 5
+  delta = 1. / div_param
 
-  pastCalls[x] = bestScore
-
+  left, right = domain
   while delta > tolerance:
-
-    # Keep x within bounds
-    if x+delta > domain[1]:
-      delta = abs(domain[1] - x) / 2
-    x += delta
-
-    if x not in pastCalls:
-      score = objFunction(x, args)
-      pastCalls[x] = score
-
-    score = pastCalls[x]
-
-    if score > bestScore:
-      bestScore = score
-      delta *= 2
-
+    if x == -1:
+      pastCalls = {}
     else:
-      # Keep x within bounds
-      if x-delta < domain[0]:
-        delta = abs(domain[0] - x) / 2
-      x -= 2*delta
+      try:
+        pastCalls = {left: pastCalls[left], right: pastCalls[right]}
+      except KeyError:
+        pastCalls = {}
 
+    print 'Delta = %f, domain = (%f, %f)' % (delta, left, right)
+
+    for x in np.linspace(left, right, div_param+1):
       if x not in pastCalls:
-        score = objFunction(x, args)
-        pastCalls[x] = score
+        pastCalls[x] = np.round(objFunction(x, args), 5)
+      print "\tParameter: %f\tScore: %f" % (x, pastCalls[x])
 
-      score = pastCalls[x]
 
-      if score > bestScore:
-        bestScore = score
-        delta *= 2
-      else:
-        x += delta
-        delta *= 0.5
+    bestX = max(sorted(pastCalls), key=pastCalls.get)
+    bestScore = pastCalls[bestX]
+    print 'Delta = %f, Best score: %f' % (delta, bestScore)
 
-    print "Parameter:", x
-    print "Best score:", bestScore
-    print "Step size:", delta
-    print
+    left = max(left, bestX-delta)
+    right = min(right, bestX+delta)
+    delta = (right - left) / div_param
+
 
   # Return the threshold from pastCalls dict. Due to numerical precision, the
   # the while loop may not always yield the threshold that reflects the max
   # score (bestScore).
-  bestParam = max(pastCalls.iterkeys(), key=lambda key: pastCalls[key])
-
-  return (bestParam, pastCalls[bestParam])
+  return (bestX, bestScore)
 
 
 def objectiveFunction(threshold, args):
