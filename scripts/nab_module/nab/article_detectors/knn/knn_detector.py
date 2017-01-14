@@ -7,8 +7,8 @@ class KnnDetector(AnomalyDetector):
     def __init__(self, *args, **kwargs):
         super(KnnDetector, self).__init__(*args, **kwargs)
         # Hyperparams
-        self.k = 5
-        self.dim = 13
+        self.k = 2
+        self.dim = 21
 
         # Algorithm attributes
         self.buf = []
