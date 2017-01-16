@@ -5,70 +5,94 @@ import math
 import heapq
 
 class KnncadDetector(AnomalyDetector):
-
     def __init__(self, *args, **kwargs):
         super(KnncadDetector, self).__init__(*args, **kwargs)
+        # Hyperparams
+        self.k = 1
+        self.dim = 1
 
+        # Algorithm attributes
         self.buf = []
         self.training = []
-        self.calibration = []
-        self.scores = []
-        self.results = []
         self.record_count = 0
+        self.rang = self.inputMax - self.inputMin
 
-        self.dim = 26
-        self.k = 6
-
+        # Mahalanobis attributes
         self.sigma = np.diag(np.ones(self.dim))
+        self.sigma_inv = np.diag(np.ones(self.dim))
+        self.mean = -1
 
-            
-    def metric(self,a,b):
-        diff = a-np.array(b)
-        return np.dot(np.dot(diff,self.sigma),diff.T)
+    def metric(self, a, b):
+        diff = a - np.array(b)
+        return np.sqrt(np.dot(np.dot(diff, self.sigma_inv), diff.T))
 
-    def ncm(self,item, item_in_array=False):
-        arr = map(lambda x:self.metric(x,item), self.training)
-        return np.sum(heapq.nsmallest(self.k+item_in_array,arr))
+    def get_NN_dist(self, item, array=None):
+        if array is None:
+            array = self.training[:-1]
+
+        dists = []
+        for x in array:
+            dist = self.metric(x, item)
+            if len(dists) < self.k:
+                dists.append(dist)
+            else:
+                i = np.argmax(dists)
+                if dists[i] > dist:
+                    dists[i] = dist
+        return sum(dists) / (self.rang * self.k * self.dim ** 0.5)
+
+    def update_sigma(self, new_item, inverse=False):
+        if self.record_count == self.probationaryPeriod - self.dim:
+            inverse = True
+
+        try:
+            if inverse:
+                self.mean = np.mean(self.training, axis=0).reshape(-1, 1)
+                X = self.training - self.mean.T
+                self.sigma = np.dot(X.T, X)
+            else:
+                delta_ = np.array([new_item]) - self.mean.T
+                self.mean += delta_.T / self.record_count
+
+                U = np.dot(delta_.T, delta_)
+                U -= U / self.record_count
+                self.sigma += U
+
+            self.sigma_inv = np.linalg.inv(self.sigma)
+            self.sigma_inv /= np.linalg.norm(self.sigma_inv, axis=0)
+        except np.linalg.linalg.LinAlgError:
+            print('Singular Matrix at record', self.record_count)
+
+    def ncm(self, item, train_set):
+        return self.get_NN_dist(item, train_set)
+
+    def cad(self, new_item):
+        train = self.training[:-1]
+        train_scores = np.empty_like(self.training)
+
+        # Leave One Out
+        for i, x in enumerate(train):
+            train_scores[i] = self.ncm(x, np.delete(train, i))
+
+        test_score = self.ncm(new_item, train)
+        return 1. * np.sum(train_scores < test_score) / (self.record_count - 1)
 
     def handleRecord(self, inputData):
         """
         inputRow = [inputData["timestamp"], inputData["value"]]
         """
         self.buf.append(inputData["value"])
-        self.record_count += 1
-        
+
         if len(self.buf) < self.dim:
             return [0.0]
         else:
             new_item = self.buf[-self.dim:]
-            if self.record_count < self.probationaryPeriod:
+            self.record_count += 1
+            if self.record_count < self.probationaryPeriod - self.dim:
                 self.training.append(new_item)
                 return [0.0]
             else:
-                ost = self.record_count % self.probationaryPeriod
-                if ost == 0 or ost == int(self.probationaryPeriod/2):
-                    try:
-                        self.sigma = np.linalg.inv(np.dot(np.array(self.training).T, self.training))
-                    except np.linalg.linalg.LinAlgError:
-                        print('Singular Matrix at record', self.record_count)
-                if len(self.scores) == 0:
-                    self.scores = list(map(lambda v: self.ncm(v, True), self.training))
-                    self.results = list(map(lambda v: 1.*len(np.where(np.array(self.scores) < v)[0])/len(self.scores), self.scores))
-                    
-                new_score = self.ncm(new_item)
-                result = 1.*len(np.where(np.array(self.scores) < new_score)[0])/len(self.scores)
-                
-                if self.record_count >= 2*self.probationaryPeriod:
-                    if self.results[0] < self.append:
-                        self.training.pop(0)
-                        self.training.append(self.calibration.pop(0))
-                    else:
-                        self.calibration.pop(0)
-                
-                self.scores.pop(0)    
-                self.results.pop(0)
-                self.calibration.append(new_item)
-                self.scores.append(new_score)
-                self.results.append(result)
+                self.training.append(new_item)
+                self.update_sigma(new_item=new_item)
 
-                return [result]
+                return [self.cad(new_item)]
