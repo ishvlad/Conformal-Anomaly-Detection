@@ -54,12 +54,12 @@ def make_note(k, dim):
     return final_score
 
 
-ks = np.array([11, 21, 30, 40])  # np.linspace(2, 40, 5).astype(int)
-dims = np.linspace(2, 40, 5).astype(int)
+ks =  np.linspace(2, 11, 5).astype(int)
+dims = np.linspace(2, 11, 5).astype(int)
 
 # edit division
 to_tuple = lambda ij: (ij / len(dims), ij % len(dims))
-buffer = []  # [177.35, 18.99, ]
+buffer = [177.35, 137.93, np.inf, np.inf]
 
 while len(ks) > 3 or len(dims) > 3:
     vals = np.ones((len(ks), len(dims))) * np.inf

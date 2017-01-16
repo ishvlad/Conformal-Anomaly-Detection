@@ -1,12 +1,27 @@
-# TODO
+# Experiment pipeline
 
-* Find optimal hyperparams of kNN (only dimension and k)
-* Implement CAD and apply it for score optimisation (direct application based on KNN hyperparams)
-* Create running script, scoring and timing policy (+ processing)
-* Move only calibration set
-* Update notebooks
+### Results
+
+|            W    |          KNN        |       LOF        |        LoOP       |
+|:---------------:|:-------------------:|:----------------:|:-----------------:|
+|        W*       | 68.64  61.07  73.64 |                  |                   |
+|      W*-CAD     |                     |                  |                   |
+|     W*-ICAD     |                     |                  |                   |
+| W*-offline ICAD |                     |                  |                   |
+|     W*-LCD      |                     |                  |                   |
+
+### Time (per value)
+
+|            W    |          KNN        |       LOF        |        LoOP       |
+|:---------------:|:-------------------:|:----------------:|:-----------------:|
+|        W*       |                     |                  |                   |
+|      W*-CAD     |                     |                  |                   |
+|     W*-ICAD     |                     |                  |                   |
+| W*-offline ICAD |                     |                  |                   |
+|     W*-LCD      |                     |                  |                   |
 
 # Optional
 
 * Matrix regularization
 * Mahalanobis <-> weighted distance
+

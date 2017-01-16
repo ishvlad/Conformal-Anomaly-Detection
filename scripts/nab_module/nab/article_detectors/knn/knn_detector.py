@@ -7,8 +7,8 @@ class KnnDetector(AnomalyDetector):
     def __init__(self, *args, **kwargs):
         super(KnnDetector, self).__init__(*args, **kwargs)
         # Hyperparams
-        self.k = 2
-        self.dim = 21
+        self.k = 1
+        self.dim = 1
 
         # Algorithm attributes
         self.buf = []
@@ -37,7 +37,10 @@ class KnnDetector(AnomalyDetector):
                     dists[i] = dist
         return sum(dists) / (self.rang * self.k * self.dim ** 0.5)
 
-    def update_sigma(self, new_item=None, inverse=False):
+    def update_sigma(self, new_item, inverse=False):
+        if self.record_count == self.probationaryPeriod - self.dim:
+            inverse = True
+
         try:
             if inverse:
                 self.mean = np.mean(self.training, axis=0).reshape(-1, 1)
@@ -72,10 +75,6 @@ class KnnDetector(AnomalyDetector):
                 return [0.0]
             else:
                 self.training.append(new_item)
-
-                if self.record_count == self.probationaryPeriod - self.dim:
-                    self.update_sigma(inverse=True)
-                else:
-                    self.update_sigma(new_item=new_item)
+                self.update_sigma(new_item=new_item)
 
                 return [self.get_NN_dist(new_item)]
