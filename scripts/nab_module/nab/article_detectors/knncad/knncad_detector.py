@@ -46,7 +46,7 @@ class KnncadDetector(AnomalyDetector):
                     if dists[i] > dist:
                         dists[i] = dist
 
-        return sum(dists) / (self.rang * self.k * self.dim ** 0.5)
+        return np.sum(dists) / (self.rang * self.k * self.dim ** 0.5)
 
     def update_sigma(self, new_item, inverse=False):
         if self.record_count == self.probationaryPeriod - self.dim:
