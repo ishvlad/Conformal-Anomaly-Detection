@@ -8,7 +8,7 @@ class KnnicadDetector(AnomalyDetector):
         super(KnnicadDetector, self).__init__(*args, **kwargs)
         # Hyperparams
         self.k = 1
-        self.dim = 1
+        self.dim = 6
 
         # Algorithm attributes
         self.buf = []
@@ -90,7 +90,7 @@ class KnnicadDetector(AnomalyDetector):
                     self.training = np.array(self.training)
 
                 # fill calibration set
-                self.update_sigma(new_item, inverse=self.mean == -1)
+                self.update_sigma(new_item, inverse=(type(self.mean) is int and self.mean == -1))
                 self.calibration_ncms.append(self.ncm(new_item))
                 return [0.0]
             else:

@@ -19,6 +19,7 @@
 # ----------------------------------------------------------------------
 
 import numpy as np
+import sys
 from nab.scorer import scoreCorpus
 
 
@@ -42,7 +43,7 @@ def optimizeThreshold(args):
     objFunction=objectiveFunction,
     args=args,
     initialGuess=0.1,
-    tolerance=.0001)
+    tolerance=1e-6)
 
   print "Optimizer found a max score of {} with anomaly threshold {}.".format(
     optimizedScore, optimizedThreshold)
@@ -92,16 +93,18 @@ def twiddle(objFunction, args, initialGuess=0.5, tolerance=0.001,
         pastCalls = {}
 
     print 'Delta = %f, domain = (%f, %f)' % (delta, left, right)
+    sys.stdout.flush()
 
     for x in np.linspace(left, right, div_param+1):
       if x not in pastCalls:
         pastCalls[x] = np.round(objFunction(x, args), 5)
       print "\tParameter: %f\tScore: %f" % (x, pastCalls[x])
-
+      sys.stdout.flush()
 
     bestX = max(sorted(pastCalls), key=pastCalls.get)
     bestScore = pastCalls[bestX]
     print 'Delta = %f, Best score: %f' % (delta, bestScore)
+    sys.stdout.flush()
 
     left = max(left, bestX-delta)
     right = min(right, bestX+delta)

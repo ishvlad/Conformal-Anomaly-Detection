@@ -128,7 +128,8 @@ class Runner(object):
           )
 
           count += 1
-
+    # for a in args:
+    #   detectDataSet(a)
     self.pool.map(detectDataSet, args)
 
 
