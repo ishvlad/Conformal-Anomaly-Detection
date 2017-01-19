@@ -236,5 +236,19 @@
             "score": -44.7538610655,
             "threshold": 1.0
         }
+    },
+    "knnicad": {
+        "reward_low_FN_rate": {
+            "score": -98.7538610655,
+            "threshold": 0.99999
+        },
+        "reward_low_FP_rate": {
+            "score": -87.9970284629,
+            "threshold": 0.99999
+        },
+        "standard": {
+            "score": -44.7538610655,
+            "threshold": 0.99999
+        }
     }
 }

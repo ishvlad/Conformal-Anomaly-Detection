@@ -39,12 +39,13 @@ from nab.detectors.null.null_detector import NullDetector
 
 from nab.article_detectors.knn.knn_detector import KnnDetector
 from nab.article_detectors.knncad.knncad_detector import KnncadDetector
+from nab.article_detectors.knnicad.knnicad_detector import KnnicadDetector
+
 
 
 
 # from nab.article_detectors.lof.lof_detector import LofDetector
 # from nab.article_detectors.loop.loop_detector import LoopDetector
-
 
 # from nab.article_detectors.lofcad.lofcad_detector import LofcadDetector
 # from nab.article_detectors.loopcad.loopcad_detector import LoopcadDetector

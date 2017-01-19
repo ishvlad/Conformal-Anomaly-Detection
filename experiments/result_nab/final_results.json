@@ -21,8 +21,13 @@
     },
     "knncad": {
         "reward_low_FN_rate": -176.73972685574714,
-        "reward_low_FP_rate": -692.82482324999989,
-        "standard": -307.86418297456902
+        "reward_low_FP_rate": -692.8248232499999,
+        "standard": -307.864182974569
+    },
+    "knnicad": {
+        "reward_low_FN_rate": 62.163960035172416,
+        "reward_low_FP_rate": 51.859637191831901,
+        "standard": 58.332146949310349
     },
     "lof": {
         "reward_low_FN_rate": 28.929750497988504,
