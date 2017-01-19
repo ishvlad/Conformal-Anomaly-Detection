@@ -23,7 +23,7 @@ class KnnicadDetector(AnomalyDetector):
 
         # Inductive attributes
         self.from_train_to_cal = 0.8 * (self.probationaryPeriod - self.dim)
-        self.calibration_ncms = np.array([])
+        self.calibration_ncms = []
 
     def metric(self, a, b):
         diff = a - np.array(b)
@@ -91,13 +91,13 @@ class KnnicadDetector(AnomalyDetector):
 
                 # fill calibration set
                 self.update_sigma(new_item, inverse=self.mean == -1)
-                self.calibration_ncms = np.append(self.calibration_ncms, self.ncm(new_item))
+                self.calibration_ncms.append(self.ncm(new_item))
                 return [0.0]
             else:
                 self.update_sigma(new_item)
                 new_ncm = self.ncm(new_item)
 
-                result = 1. * np.sum(self.calibration_ncms < new_ncm) / len(self.calibration_ncms)
-                self.calibration_ncms = np.append(self.calibration_ncms, new_ncm)
+                result = 1. * np.sum(np.array(self.calibration_ncms) < new_ncm) / len(self.calibration_ncms)
+                self.calibration_ncms.append(new_ncm)
 
                 return [result]
