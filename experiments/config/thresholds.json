@@ -43,30 +43,30 @@
     },
     "knn": {
         "reward_low_FN_rate": {
-            "score": 24.253830000000001,
+            "score": 24.25383,
             "threshold": 0.014286848000000003
         },
         "reward_low_FP_rate": {
-            "score": 25.681419999999999,
+            "score": 25.68142,
             "threshold": 0.021958656000000003
         },
         "standard": {
-            "score": 43.253830000000001,
+            "score": 43.25383,
             "threshold": 0.014286848000000003
         }
     },
     "knncad": {
         "reward_low_FN_rate": {
-            "score": -115.83455396191451,
-            "threshold": 1.0
+            "score": -847.05425000000002,
+            "threshold": 0.99900159999999993
         },
         "reward_low_FP_rate": {
-            "score": -67.47723977955488,
+            "score": -1723.3535899999999,
             "threshold": 1.0
         },
         "standard": {
-            "score": -53.94874677274592,
-            "threshold": 1.0
+            "score": -830.24490000000003,
+            "threshold": 0.99897599999999998
         }
     },
     "lof": {
