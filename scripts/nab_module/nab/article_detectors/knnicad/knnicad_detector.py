@@ -8,7 +8,7 @@ class KnnicadDetector(AnomalyDetector):
         super(KnnicadDetector, self).__init__(*args, **kwargs)
         # Hyperparams
         self.k = 1
-        self.dim = 6
+        self.dim = 1
 
         # Algorithm attributes
         self.buf = []

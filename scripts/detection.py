@@ -10,8 +10,8 @@ detector = 'knnicad'
 is_nab = True
 
 detector_file = 'nab_module/nab/article_detectors/' + detector + '/' + detector + '_detector.py'
-pre_string_yahoo = 'time python2 nab_module/run.py --skipConfirmation --data Y -n 8 '
-pre_string_nab = 'time python2 nab_module/run.py --skipConfirmation --data N -n 8 '
+pre_string_yahoo = 'time python2 nab_module/run.py --skipConfirmation --data Y -n 3 '
+pre_string_nab = 'time python2 nab_module/run.py --skipConfirmation --data N -n 3 '
 
 result_file = 'nab_' if is_nab else 'yahoo_'
 result_file += detector + '.txt'

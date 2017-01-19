@@ -239,16 +239,16 @@
     },
     "knnicad": {
         "reward_low_FN_rate": {
-            "score": -98.7538610655,
-            "threshold": 0.99999
+            "score": 2.2047099999999999,
+            "threshold": 0.99838770528255993
         },
         "reward_low_FP_rate": {
-            "score": -87.9970284629,
-            "threshold": 0.99999
+            "score": 6.3122100000000003,
+            "threshold": 0.99978655580160003
         },
         "standard": {
-            "score": -44.7538610655,
-            "threshold": 0.99999
+            "score": 24.102450000000001,
+            "threshold": 0.99904764395519996
         }
     }
 }
