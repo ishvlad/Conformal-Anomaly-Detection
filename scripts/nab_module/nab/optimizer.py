@@ -43,7 +43,7 @@ def optimizeThreshold(args):
     objFunction=objectiveFunction,
     args=args,
     initialGuess=0.1,
-    tolerance=1e-6)
+    tolerance=1e-5)
 
   print "Optimizer found a max score of {} with anomaly threshold {}.".format(
     optimizedScore, optimizedThreshold)

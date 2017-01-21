@@ -6,12 +6,12 @@ import subprocess
 ### K position -- 10
 ### DIM position -- 11
 #######
-detector = 'knnicad'
+detector = 'knnofficad'
 is_nab = True
 
 detector_file = 'nab_module/nab/article_detectors/' + detector + '/' + detector + '_detector.py'
 pre_string_yahoo = 'time python2 nab_module/run.py --skipConfirmation --data Y -n 3 '
-pre_string_nab = 'time python2 nab_module/run.py --skipConfirmation --data N -n 3 '
+pre_string_nab = 'time python2 nab_module/run.py --skipConfirmation --data N -n 4 '
 
 result_file = 'nab_' if is_nab else 'yahoo_'
 result_file += detector + '.txt'
@@ -54,14 +54,16 @@ def make_note(k, dim):
     return final_score
 
 
-ks =  np.linspace(1, 21, 5).astype(int)
-dims = np.linspace(1, 21, 5).astype(int)
+ks = np.array([1, 2])  # np.linspace(1, 6, 5).astype(int)
+dims = np.array([1, 2])  # np.linspace(1, 6, 5).astype(int)
 
 # edit division
 to_tuple = lambda ij: (ij / len(dims), ij % len(dims))
 buffer = []
+first = True
 
-while len(ks) > 3 or len(dims) > 3:
+while first or (len(ks) > 3 or len(dims) > 3):
+    first = False
     vals = np.ones((len(ks), len(dims))) * np.inf
     if len(buffer) != 0:
         vals[[0, 0, -1, -1], [0, -1, 0, -1]] = buffer
