@@ -41,6 +41,7 @@ from nab.article_detectors.knn.knn_detector import KnnDetector
 from nab.article_detectors.knncad.knncad_detector import KnncadDetector
 from nab.article_detectors.knnicad.knnicad_detector import KnnicadDetector
 from nab.article_detectors.knnofficad.knnofficad_detector import KnnofficadDetector
+from nab.article_detectors.knnlcd.knnlcd_detector import KnnlcdDetector
 
 
 

@@ -8,7 +8,7 @@
 |      W*-CAD     |-307.86, -692.82, -176.74 |                  |                   |
 |     W*-ICAD     |  60.39,   52.72,   67.30 |                  |                   |
 |     W-ICAD*     |  60.39,   52.72,   67.30 |                  |                   |
-| W*-offline ICAD |                          |                  |                   |
+| W*-offline ICAD |  44.85,    8.08,   58.92 |                  |                   |
 |     W*-LCD      |                          |                  |                   |
 
 ### Average time (per value), ms

@@ -97,6 +97,20 @@
             "threshold": 0.99901183999999998
         }
     },
+    "knnlcd": {
+        "reward_low_FN_rate": {
+            "score": -48.378189999999996,
+            "threshold": 0.99901388799999991
+        },
+        "reward_low_FP_rate": {
+            "score": -37.832999999999998,
+            "threshold": 0.99979008000000003
+        },
+        "standard": {
+            "score": -9.4370100000000008,
+            "threshold": 0.99901183999999998
+        }
+    },
     "lof": {
         "reward_low_FN_rate": {
             "score": -115.83455396191451,
