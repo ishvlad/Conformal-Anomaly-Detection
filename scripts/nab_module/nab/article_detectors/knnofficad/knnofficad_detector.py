@@ -7,7 +7,7 @@ class KnnofficadDetector(AnomalyDetector):
     def __init__(self, *args, **kwargs):
         super(KnnofficadDetector, self).__init__(*args, **kwargs)
         # Hyperparams
-        self.k = 1
+        self.k = 2
         self.dim = 1
 
         # Algorithm attributes
