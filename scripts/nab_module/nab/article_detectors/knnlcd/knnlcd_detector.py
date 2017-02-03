@@ -23,6 +23,7 @@ class KnnlcdDetector(AnomalyDetector):
 
         # Inductive attributes
         self.calibration = []
+        self.calibration_scores = []
 
     def metric(self, a, b):
         diff = a - np.array(b)
@@ -50,22 +51,12 @@ class KnnlcdDetector(AnomalyDetector):
 
         return np.sum(dists) / (self.rang * self.k * self.dim ** 0.5)
 
-    def update_sigma(self, new_item, inverse=False):
+    def update_sigma(self):
         try:
-            if inverse:
-                self.mean = np.mean(self.training, axis=0).reshape(-1, 1)
-                X = self.training - self.mean.T
-                self.sigma = np.dot(X.T, X)
-            else:
-                delta_ = np.array([new_item]) - self.mean.T
-                self.mean += delta_.T / self.record_count
-
-                U = np.dot(delta_.T, delta_)
-                U -= U / self.record_count
-                self.sigma += U
-
-            self.sigma_inv = np.linalg.inv(self.sigma)
+            X = self.training - np.mean(self.training, axis=0)
+            self.sigma_inv = np.linalg.inv(np.dot(X.T, X))
             self.sigma_inv /= np.linalg.norm(self.sigma_inv, axis=0)
+
         except np.linalg.linalg.LinAlgError:
             print('Singular Matrix at record', self.record_count)
 
@@ -85,32 +76,26 @@ class KnnlcdDetector(AnomalyDetector):
             self.record_count += 1
 
             if self.record_count < self.probationaryPeriod - self.dim:
-                # fill training and calibration set
+                # fill training set
                 self.training.append(new_item)
-                self.calibration.append(new_item)
                 return [0.0]
             else:
-                self.update_sigma(new_item, inverse=self.record_count == self.probationaryPeriod - self.dim)
+                if self.record_count == self.probationaryPeriod - self.dim:
+                    self.update_sigma()
+                    # Leave One Out
+                    loo_ncm = lambda x: self.ncm(x[1], np.delete(self.training, x[0]))
+                    self.calibration_scores = list(map(loo_ncm, enumerate(self.training)))
+
                 new_ncm = self.ncm(new_item)
+                anomaly_score = 1. * np.sum(np.array(self.calibration_scores) < new_ncm) / len(self.calibration_scores)
 
-                if self.record_count < 2 * (self.probationaryPeriod - self.dim):
-                    border = int(self.record_count - (self.probationaryPeriod - self.dim))
-                    if border != 0:
-                        loo_ncm = lambda x: self.ncm(x[1], np.delete(self.training, border + x[0]))
-                        ncms = list(map(loo_ncm, enumerate(self.calibration[:-border])))
-                        ncms.extend(list(map(lambda x: self.ncm(x), self.calibration[-border:])))
-                    else:
-                        loo_ncm = lambda x: self.ncm(x[1], np.delete(self.training, x[0]))
-                        ncms = list(map(loo_ncm, enumerate(self.calibration)))
-
-                    self.calibration.pop(0)
-                    self.calibration.append(new_item)
-                else:
-                    ncms = list(map(lambda x: self.ncm(x), self.calibration))
-
+                if self.record_count >= 2 * (self.probationaryPeriod - self.dim):
                     self.training.pop(0)
                     self.training.append(self.calibration.pop(0))
-                    self.calibration.append(new_item)
+                    self.update_sigma()
 
-                result = 1. * np.sum(np.array(ncms) < new_ncm) / len(ncms)
-                return [result]
+            self.calibration.append(new_item)
+            self.calibration_scores.pop(0)
+            self.calibration_scores.append(new_ncm)
+
+            return [anomaly_score]
