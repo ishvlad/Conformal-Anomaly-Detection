@@ -7,8 +7,8 @@ class KnnlcdDetector(AnomalyDetector):
     def __init__(self, *args, **kwargs):
         super(KnnlcdDetector, self).__init__(*args, **kwargs)
         # Hyperparams
-        self.k = 1
-        self.dim = 1
+        self.k = 10
+        self.dim = 10
 
         # Algorithm attributes
         self.buf = []
@@ -29,27 +29,14 @@ class KnnlcdDetector(AnomalyDetector):
         diff = a - np.array(b)
         return np.dot(np.dot(diff, self.sigma_inv), diff.T) ** 0.5
 
-    def get_NN_dist(self, item, array=None):
-        if array is None:
-            array = self.training
-        if type(array) is not np.ndarray:
-            array = np.array(array)
-
-        if self.k == 1 and self.dim == 1:
-            dists = np.abs(array - item) * np.sqrt(self.sigma_inv)
-            dists = np.min(dists)
-        else:
-            dists = []
-            for x in array:
-                dist = self.metric(x, item)
-                if len(dists) < self.k:
-                    dists.append(dist)
-                else:
-                    i = np.argmax(dists)
-                    if dists[i] > dist:
-                        dists[i] = dist
-
-        return np.sum(dists) / (self.rang * self.k * self.dim ** 0.5)
+    # def get_NN_dist(self, item, array):
+    #     delta_ = item[np.newaxis] - array
+    #     distances = np.sqrt(np.einsum("ij,ik,jk->i",
+    #                                   delta_, delta_, self.sigma_inv))
+    #     neighbours = distances.argsort(axis=0)[:self.k]
+    #
+    #     dists = distances[neighbours]
+    #     return np.sum(dists) / (self.rang * self.k * self.dim ** 0.5)
 
     def update_sigma(self):
         try:
@@ -80,13 +67,16 @@ class KnnlcdDetector(AnomalyDetector):
                 self.training.append(new_item)
                 return [0.0]
             else:
+                training_ = np.array(self.training)
                 if self.record_count == self.probationaryPeriod - self.dim:
                     self.update_sigma()
                     # Leave One Out
-                    loo_ncm = lambda x: self.ncm(x[1], np.delete(self.training, x[0]))
-                    self.calibration_scores = list(map(loo_ncm, enumerate(self.training)))
-
-                new_ncm = self.ncm(new_item)
+                    loo_ncm = lambda i, x: self.ncm(x, np.delete(training_, i, axis=0))
+                    self.calibration_scores = list(map(loo_ncm,
+                                                       range(len(training_)),
+                                                       training_))
+                new_item = np.array(new_item)
+                new_ncm = self.ncm(new_item, array=training_)
                 anomaly_score = 1. * np.sum(np.array(self.calibration_scores) < new_ncm) / len(self.calibration_scores)
 
                 if self.record_count >= 2 * (self.probationaryPeriod - self.dim):

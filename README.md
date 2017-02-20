@@ -23,8 +23,8 @@
 |     W-ICAD*     |        1.368        |                  |
 | W*-offline ICAD |        0.561        |                  |
 | W-offline ICAD* |       18.736        |                  |
-|     W*-LCD      |  |                  |                   |
-|     W-slice*    |   |                  |
+|     W*-LCD      |   |                  |                   |
+|     W-slice*    |       20.720        |                  |
 
 ### Average time (per dataset), s
 
@@ -37,7 +37,7 @@
 | W*-offline ICAD |         3.534       |                  |
 | W-offline ICAD* |       118.087       |                  |
 |     W*-LCD      |   |                  |
-|     W-slice*    |   |                  |
+|     W-slice*    |       130.591       |                  |
 
 
 # Optional

@@ -22,6 +22,7 @@ import abc
 import os
 import pandas
 import sys
+import numpy as np
 
 from datetime import datetime
 from nab.util import createPath, getProbationPeriod
@@ -131,6 +132,15 @@ class AnomalyDetector(object):
 
     ans = pandas.DataFrame(rows, columns=headers)
     return ans
+
+  def get_NN_dist(self, item, array):
+    delta_ = item[np.newaxis] - array
+    distances = np.sqrt(np.einsum("ij,ik,jk->i",
+                                  delta_, delta_, self.sigma_inv))
+    neighbours = distances.argsort(axis=0)[:self.k]
+
+    dists = distances[neighbours]
+    return np.sum(dists) / (self.rang * self.k * self.dim ** 0.5)
 
 
 def detectDataSet(args):
