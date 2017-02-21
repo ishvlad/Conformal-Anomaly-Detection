@@ -133,14 +133,35 @@ class AnomalyDetector(object):
     ans = pandas.DataFrame(rows, columns=headers)
     return ans
 
-  def get_NN_dist(self, item, array):
+  def metric(self, a, b):
+    diff = a - np.array(b)
+    return np.sqrt(np.dot(np.dot(diff, self.sigma_inv), diff.T))
+
+  def get_NN_dist(self, item, array, return_nn=False):
     delta_ = item[np.newaxis] - array
     distances = np.sqrt(np.einsum("ij,ik,jk->i",
                                   delta_, delta_, self.sigma_inv))
-    neighbours = distances.argsort(axis=0)[:self.k]
+    neighbours = distances.argsort(axis=0)[:self.k + 1]
 
     dists = distances[neighbours]
-    return np.sum(dists) / (self.rang * self.k * self.dim ** 0.5)
+    result = np.sum(dists) / (self.rang * self.k * self.dim ** 0.5)
+    if not return_nn:
+      return result
+    else:
+      return result, neighbours[1:]
+
+  def update_sigma(self):
+    try:
+      X = self.training - np.mean(self.training, axis=0)
+      self.sigma_inv = np.linalg.inv(np.dot(X.T, X))
+      self.sigma_inv /= np.linalg.norm(self.sigma_inv, axis=0)
+
+    except np.linalg.linalg.LinAlgError:
+      print('Singular Matrix at record', self.record_count)
+
+  def metric(self, a, b):
+    diff = a - np.array(b)
+    return np.sqrt(np.dot(np.dot(diff, self.sigma_inv), diff.T))
 
 
 def detectDataSet(args):

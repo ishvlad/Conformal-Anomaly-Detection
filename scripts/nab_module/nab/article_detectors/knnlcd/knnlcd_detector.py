@@ -7,8 +7,8 @@ class KnnlcdDetector(AnomalyDetector):
     def __init__(self, *args, **kwargs):
         super(KnnlcdDetector, self).__init__(*args, **kwargs)
         # Hyperparams
-        self.k = 10
-        self.dim = 10
+        self.k = 1
+        self.dim = 1
 
         # Algorithm attributes
         self.buf = []
@@ -28,15 +28,6 @@ class KnnlcdDetector(AnomalyDetector):
     def metric(self, a, b):
         diff = a - np.array(b)
         return np.dot(np.dot(diff, self.sigma_inv), diff.T) ** 0.5
-
-    # def get_NN_dist(self, item, array):
-    #     delta_ = item[np.newaxis] - array
-    #     distances = np.sqrt(np.einsum("ij,ik,jk->i",
-    #                                   delta_, delta_, self.sigma_inv))
-    #     neighbours = distances.argsort(axis=0)[:self.k]
-    #
-    #     dists = distances[neighbours]
-    #     return np.sum(dists) / (self.rang * self.k * self.dim ** 0.5)
 
     def update_sigma(self):
         try:
