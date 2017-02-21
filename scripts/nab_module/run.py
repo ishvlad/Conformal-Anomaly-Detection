@@ -47,6 +47,7 @@ from nab.article_detectors.knnslice.knnslice_detector import KnnsliceDetector
 
 
 from nab.article_detectors.lof.lof_detector import LofDetector
+from nab.article_detectors.loficad.loficad_detector import LoficadDetector
 
 # from nab.article_detectors.lofcad.lofcad_detector import LofcadDetector
 # from nab.article_detectors.loopcad.loopcad_detector import LoopcadDetector

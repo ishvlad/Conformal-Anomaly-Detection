@@ -14,18 +14,29 @@ class KnnDetector(AnomalyDetector):
         self.buf = []
         self.training = []
         self.record_count = 0
-        self.rang = self.inputMax - self.inputMin
 
         # Mahalanobis attributes
         self.sigma = np.diag(np.ones(self.dim))
         self.sigma_inv = np.diag(np.ones(self.dim))
         self.mean = -1
 
+        self.rang = 0
+        self.min_value = np.inf
+        self.max_value = -np.inf
+
     def handleRecord(self, inputData):
         """
         inputRow = [inputData["timestamp"], inputData["value"]]
         """
-        self.buf.append(inputData["value"])
+        value = inputData["value"]
+        self.buf.append(value)
+
+        if value < self.min_value:
+            self.min_value = value
+            self.rang = self.max_value - self.min_value
+        elif value > self.max_value:
+            self.max_value = value
+            self.rang = self.max_value - self.min_value
 
         if len(self.buf) < self.dim:
             return [0.0]

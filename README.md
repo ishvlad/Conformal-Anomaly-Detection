@@ -4,11 +4,11 @@
 
 |            W    |           KNN            |       LOF        |
 |:---------------:|:------------------------:|:----------------:|
-|        W*       |  68.64,   61.07,   73.64 |                  |
-|     W*-ICAD     |  60.39,   52.72,   67.30 |                  |
-| W*-offline ICAD |  44.85,   08.08,   58.92 |                  |
-|     W*-LCD      |   |                  |
-|     W-slice*    |  59.07,   49.84,   67.83 |                  |
+|        W*       |  |                  |
+|     W*-ICAD     |  |                  |
+| W*-offline ICAD |  |                  |
+|     W*-LCD      |  |                  |
+|     W-slice*    |  |                  |
 
 ### Average time (per value), ms
 
@@ -17,7 +17,7 @@
 |        W*       |       59.285        |                  |
 |     W*-ICAD     |        1.368        |                  |
 | W*-offline ICAD |        0.561        |                  |
-|     W*-LCD      |   |                  |                   |
+|     W*-LCD      |    |                   |
 |     W-slice*    |       20.720        |                  |
 
 ### Average time (per dataset), s

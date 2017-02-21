@@ -30,9 +30,9 @@
         "standard": 58.67146159172414
     },
     "knnlcd": {
-        "reward_low_FN_rate": 23.514850347988503,
-        "reward_low_FP_rate": -80.45617287112069,
-        "standard": -3.5208279262931
+        "reward_low_FN_rate": 52.394367296465518,
+        "reward_low_FP_rate": 8.2957252736637894,
+        "standard": 40.229481979181038
     },
     "knnofficad": {
         "reward_low_FN_rate": 58.922815032931034,
@@ -45,7 +45,7 @@
         "standard": 59.06751731215518
     },
     "lof": {
-        "reward_low_FN_rate": 5.6718336477011553,
+        "reward_low_FN_rate": 5.671833647701155,
         "reward_low_FP_rate": 0.36789787629309956,
         "standard": 3.9841561267241343
     },

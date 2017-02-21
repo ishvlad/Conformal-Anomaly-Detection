@@ -43,7 +43,7 @@ def optimizeThreshold(args):
     objFunction=objectiveFunction,
     args=args,
     initialGuess=0.1,
-    tolerance=1e-7)
+    tolerance=1e-5)
 
   print "Optimizer found a max score of {} with anomaly threshold {}.".format(
     optimizedScore, optimizedThreshold)
@@ -55,7 +55,7 @@ def optimizeThreshold(args):
 
 
 def twiddle(objFunction, args, initialGuess=0.5, tolerance=0.001,
-            domain=(0.99, 1.)):
+            domain=(0., 1.)):
   """Optimize a single parameter given an objective function.
 
   This is a local hill-climbing algorithm. Here is a simple description of it:
