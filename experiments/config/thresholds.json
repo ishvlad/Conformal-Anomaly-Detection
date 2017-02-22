@@ -43,16 +43,16 @@
     },
     "knn": {
         "reward_low_FN_rate": {
-            "score": 24.25383,
-            "threshold": 0.014286848000000003
+            "score": 15.64757,
+            "threshold": 0.014341667553280004
         },
         "reward_low_FP_rate": {
-            "score": 25.68142,
-            "threshold": 0.021958656000000003
+            "score": 18.647020000000001,
+            "threshold": 0.0365254213632
         },
         "standard": {
-            "score": 43.25383,
-            "threshold": 0.014286848000000003
+            "score": 35.905760000000001,
+            "threshold": 0.024252277063680008
         }
     },
     "knncad": {
@@ -86,15 +86,15 @@
     "knnlcd": {
         "reward_low_FN_rate": {
             "score": -49.6676,
-            "threshold": 0.99867647999999987
+            "threshold": 0.9986764799999999
         },
         "reward_low_FP_rate": {
-            "score": -96.753919999999994,
-            "threshold": 0.99867647999999987
+            "score": -96.75392,
+            "threshold": 0.9986764799999999
         },
         "standard": {
             "score": -22.6676,
-            "threshold": 0.99867647999999987
+            "threshold": 0.9986764799999999
         }
     },
     "knnofficad": {

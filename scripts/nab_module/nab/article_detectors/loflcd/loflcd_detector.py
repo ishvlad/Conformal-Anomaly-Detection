@@ -7,14 +7,13 @@ class LoflcdDetector(AnomalyDetector):
     def __init__(self, *args, **kwargs):
         super(LoflcdDetector, self).__init__(*args, **kwargs)
         # Hyperparams
-        self.k = 1
+        self.k = 3
         self.dim = 1
 
         # Algorithm attributes
         self.buf = []
         self.training = []
         self.record_count = 0
-        self.rang = self.inputMax - self.inputMin
 
         # Mahalanobis attributes
         self.sigma = np.diag(np.ones(self.dim))
@@ -24,6 +23,10 @@ class LoflcdDetector(AnomalyDetector):
         # Inductive attributes
         self.calibration_ncms = []
         self.calibration_scores = []
+
+        self.rang = 0
+        self.min_value = np.inf
+        self.max_value = -np.inf
 
     def lof(self, item, array):
         if not isinstance(array, np.ndarray):

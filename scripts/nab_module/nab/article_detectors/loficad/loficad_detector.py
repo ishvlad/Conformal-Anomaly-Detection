@@ -7,14 +7,13 @@ class LoficadDetector(AnomalyDetector):
     def __init__(self, *args, **kwargs):
         super(LoficadDetector, self).__init__(*args, **kwargs)
         # Hyperparams
-        self.k = 1
-        self.dim = 2
+        self.k = 3
+        self.dim = 1
 
         # Algorithm attributes
         self.buf = []
         self.training = []
         self.record_count = 0
-        self.rang = self.inputMax - self.inputMin
 
         # Mahalanobis attributes
         self.sigma = np.diag(np.ones(self.dim))
@@ -24,6 +23,10 @@ class LoficadDetector(AnomalyDetector):
         # Inductive attributes
         self.from_train_to_cal = 0.7 * (self.probationaryPeriod - self.dim)
         self.calibration_ncms = []
+
+        self.rang = 0
+        self.min_value = np.inf
+        self.max_value = -np.inf
 
     def lof(self, item, array):
         if not isinstance(array, np.ndarray):
@@ -42,7 +45,15 @@ class LoficadDetector(AnomalyDetector):
         """
         inputRow = [inputData["timestamp"], inputData["value"]]
         """
-        self.buf.append(inputData["value"])
+        value = inputData["value"]
+        self.buf.append(value)
+
+        if value < self.min_value:
+            self.min_value = value
+            self.rang = self.max_value - self.min_value
+        elif value > self.max_value:
+            self.max_value = value
+            self.rang = self.max_value - self.min_value
 
         if len(self.buf) < self.dim:
             return [0.0]

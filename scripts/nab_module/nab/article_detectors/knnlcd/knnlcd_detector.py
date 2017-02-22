@@ -14,7 +14,6 @@ class KnnlcdDetector(AnomalyDetector):
         self.buf = []
         self.training = []
         self.record_count = 0
-        self.rang = self.inputMax - self.inputMin
 
         # Mahalanobis attributes
         self.sigma = np.diag(np.ones(self.dim))
@@ -25,18 +24,9 @@ class KnnlcdDetector(AnomalyDetector):
         self.calibration = []
         self.calibration_scores = []
 
-    def metric(self, a, b):
-        diff = a - np.array(b)
-        return np.dot(np.dot(diff, self.sigma_inv), diff.T) ** 0.5
-
-    def update_sigma(self):
-        try:
-            X = self.training - np.mean(self.training, axis=0)
-            self.sigma_inv = np.linalg.inv(np.dot(X.T, X))
-            self.sigma_inv /= np.linalg.norm(self.sigma_inv, axis=0)
-
-        except np.linalg.linalg.LinAlgError:
-            print('Singular Matrix at record', self.record_count)
+        self.rang = 0
+        self.min_value = np.inf
+        self.max_value = -np.inf
 
     def ncm(self, item, array=None):
         return self.get_NN_dist(item, array)
@@ -45,7 +35,17 @@ class KnnlcdDetector(AnomalyDetector):
         """
         inputRow = [inputData["timestamp"], inputData["value"]]
         """
-        self.buf.append(inputData["value"])
+        value = inputData["value"]
+        self.buf.append(value)
+
+        # TODO: consider quantiles instead of strict borders
+
+        if value < self.min_value:
+            self.min_value = value
+            self.rang = self.max_value - self.min_value
+        elif value > self.max_value:
+            self.max_value = value
+            self.rang = self.max_value - self.min_value
 
         if len(self.buf) < self.dim:
             return [0.0]
@@ -62,12 +62,10 @@ class KnnlcdDetector(AnomalyDetector):
                 if self.record_count == self.probationaryPeriod - self.dim:
                     self.update_sigma()
                     # Leave One Out
-                    loo_ncm = lambda i, x: self.ncm(x, np.delete(training_, i, axis=0))
-                    self.calibration_scores = list(map(loo_ncm,
-                                                       range(len(training_)),
-                                                       training_))
+                    loo_ncm = lambda x: self.ncm(x)
+                    self.calibration_scores = list(map(loo_ncm, training_))
                 new_item = np.array(new_item)
-                new_ncm = self.ncm(new_item, array=training_)
+                new_ncm = self.ncm(new_item)
                 anomaly_score = 1. * np.sum(np.array(self.calibration_scores) < new_ncm) / len(self.calibration_scores)
 
                 if self.record_count >= 2 * (self.probationaryPeriod - self.dim):
