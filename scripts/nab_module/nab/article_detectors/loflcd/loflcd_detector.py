@@ -45,7 +45,15 @@ class LoflcdDetector(AnomalyDetector):
         """
         inputRow = [inputData["timestamp"], inputData["value"]]
         """
-        self.buf.append(inputData["value"])
+        value = inputData["value"]
+        self.buf.append(value)
+
+        if value < self.min_value:
+            self.min_value = value
+            self.rang = self.max_value - self.min_value
+        elif value > self.max_value:
+            self.max_value = value
+            self.rang = self.max_value - self.min_value
 
         if len(self.buf) < self.dim:
             return [0.0]
